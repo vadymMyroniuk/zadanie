@@ -1,0 +1,2 @@
+For generate QR code You have  add to php.ini line "extension=php_gd2.dll" or "extension=php_gd.dll"
+look in php/ext this extension
