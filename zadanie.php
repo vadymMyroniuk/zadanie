@@ -20,7 +20,6 @@ class User{
     public function getDomain(){
         $email = $this->email;
         $domain_name = substr(strrchr($email, "@"), 1);
-        echo "Domain name: ". $domain_name .'<br>';
         return $domain_name;
     }
 }
@@ -41,17 +40,39 @@ function UpdateDomainCountQuery($domain_id, $table_domain_name):string{
     $query = "UPDATE `".$table_domain_name."` SET total = total + 1 WHERE `id` = ".$domain_id;
     return $query;
 }
+function CreateDatabase($servername, $username, $password, $db_name){
+    // Create connection
+    $conn = new mysqli($servername, $username, $password);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    echo "Connected successfully"."<br>";
+
+
+    $query = "CREATE DATABASE ".$db_name;
+
+    if ($conn->query($query) === TRUE) {
+        echo "Database created successfully"."<br>";
+    } else {
+        echo "Error creating database: " . $conn->error. "<br>";
+    }
+
+    $conn->close();
+}
 
 //zadanie 1
 echo 'Zadanie 1'.'<br>';
-$link1 = "https://jsonplaceholder.typicode.com/users/1";
-$user1 = new User($link1);
+$link = "https://jsonplaceholder.typicode.com/users/2";
+$user = new User($link);
 print_r($user);
 
 //zadanie 2
 echo '<br><br>'.'Zadanie 2'.'<br>';
 echo 'Email: '. $user->email.'<br>';
-$user->getDomain();
+echo 'Domain: '.$user->getDomain().'<br>';
+
 
 //zadanie 3
 echo '<br>'.'Zadanie 3'.'<br>';
@@ -62,8 +83,6 @@ echo '<img src="'.(new QRCode())->render($userJSON).'" alt="QR Code" />';
 
 
 //zadanie 4
-$link2 = "https://jsonplaceholder.typicode.com/users/2";
-$user2 = new User($link2);
 echo '<br>'.'Zadanie 4'.'<br>';
 
 $servername = "localhost";
@@ -71,36 +90,19 @@ $username = "root";
 $password = "";
 $db_name = "test_user";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
-echo "Connected successfully"."<br>";
-
-
-$query = "CREATE DATABASE ".$db_name;
-
-if ($conn->query($query) === TRUE) {
-  echo "Database created successfully"."<br>";
-} else {
-  echo "Error creating database: " . $conn->error. "<br>";
-}
-$conn->close();
+CreateDatabase($servername, $username, $password, $db_name);
 
 $conn = new mysqli($servername, $username, $password, $db_name);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-  }
-  echo "Connected to database ".$db_name." successfully"."<br>";
+}
+echo "Connected to database ".$db_name." successfully"."<br>";
+
 $table_email = "UserEmail";
 $create_table_1 = "CREATE TABLE UserEmail (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(50) NOT NULL,
     domain_id int(6) UNSIGNED NOT NULL)";
-
 if ($conn->query($create_table_1) === TRUE) {
     echo "Table ". $table_email ." created successfully"."<br>";
 } else {
